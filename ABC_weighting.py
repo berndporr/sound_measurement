@@ -81,6 +81,11 @@ def ABC_weighting(curve='A'):
 
     return np.array(z), np.array(p), k
 
+def matched_z(z,p,fs):
+    z = np.array(z)
+    p = np.array(p)
+    return np.exp(z/fs),np.exp(z/fs)
+
 
 def A_weighting(fs, output='ba'):
     """
@@ -113,14 +118,11 @@ def A_weighting(fs, output='ba'):
     >>> plt.semilogx(w*fs/(2*pi), 20*np.log10(abs(h)))
     >>> plt.grid(True, color='0.7', linestyle='-', which='both', axis='both')
     >>> plt.axis([10, 100e3, -50, 20])
-
-    Since this uses the bilinear transform, frequency response around fs/2 will
-    be inaccurate at lower sampling rates.
     """
     z, p, k = ABC_weighting('A')
 
-    # Use the bilinear transformation to get the digital filter.
-    z_d, p_d, k_d = _zpkbilinear(z, p, k, fs)
+    # Use the matched z transformation to get the digital filter.
+    z_d, p_d, k_d = signal.bilinear_zpk(z, p, k, fs)
 
     if output == 'zpk':
         return z_d, p_d, k_d
@@ -204,7 +206,7 @@ def _derive_coefficients():
 if __name__ == '__main__':
     for curve in ['A', 'B', 'C']:
         z, p, k = ABC_weighting(curve)
-        w = 2*pi*np.logspace(log10(10), log10(100000), 1000)
+        w = 2*pi*np.logspace(log10(10), log10(20000), 1000)
         w, h = signal.freqs_zpk(z, p, k, w)
         plt.semilogx(w/(2*pi), 20*np.log10(h), label=curve)
     plt.title('Frequency response')
@@ -214,4 +216,17 @@ if __name__ == '__main__':
     plt.grid(True, color='0.7', linestyle='-', which='major', axis='both')
     plt.grid(True, color='0.9', linestyle='-', which='minor', axis='both')
     plt.legend()
+
+
+    plt.figure()
+
+    fs = 200000
+    b, a = A_weighting(fs)
+    f = np.logspace(np.log10(10), np.log10(fs/2), 1000)
+    w = 2*pi * f / fs
+    w, h = signal.freqz(b, a, w)
+    plt.semilogx(w*fs/(2*pi), 20*np.log10(abs(h)))
+    plt.grid(True, color='0.7', linestyle='-', which='both', axis='both')
+    plt.axis([10, 100e3, -50, 20])
+    
     plt.show()
