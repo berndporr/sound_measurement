@@ -74,7 +74,6 @@ def ABC_weighting(curve='A'):
         p.append(-2*pi*10**2.2)  # exact
         z.append(0)
 
-    # TODO: Calculate actual constants for this
     # Normalize to 0 dB at 1 kHz for all curves
     b, a = zpk2tf(z, p, k)
     k /= abs(freqs(b, a, [2*pi*1000])[1][0])
@@ -82,9 +81,7 @@ def ABC_weighting(curve='A'):
     return np.array(z), np.array(p), k
 
 def matched_z(z,p,fs):
-    z = np.array(z)
-    p = np.array(p)
-    return np.exp(z/fs),np.exp(z/fs)
+    return np.exp(z/fs),np.exp(p/fs)
 
 
 def A_weighting(fs, output='ba'):
@@ -122,7 +119,16 @@ def A_weighting(fs, output='ba'):
     z, p, k = ABC_weighting('A')
 
     # Use the matched z transformation to get the digital filter.
-    z_d, p_d, k_d = signal.bilinear_zpk(z, p, k, fs)
+    print(z,p,k)
+    z_d, p_d = matched_z(z,p,fs) #signal.bilinear_zpk(z, p, k, fs)
+    # Normalize to 0 dB at 1 kHz for all curves
+    b, a = zpk2tf(z_d, p_d, 1)
+    k_d = 1
+    w = 2*pi * 1000 / fs
+    [w], [h] = signal.freqz(b, a, [1000], fs=fs)
+    print("wmh=",w,np.abs(h))
+    k_d = k_d / np.abs(h)
+    print(z_d,p_d,k_d)
 
     if output == 'zpk':
         return z_d, p_d, k_d
@@ -220,13 +226,13 @@ if __name__ == '__main__':
 
     plt.figure()
 
-    fs = 200000
+    fs = 48000
     b, a = A_weighting(fs)
     f = np.logspace(np.log10(10), np.log10(fs/2), 1000)
     w = 2*pi * f / fs
     w, h = signal.freqz(b, a, w)
     plt.semilogx(w*fs/(2*pi), 20*np.log10(abs(h)))
     plt.grid(True, color='0.7', linestyle='-', which='both', axis='both')
-    plt.axis([10, 100e3, -50, 20])
+    plt.axis([10, 30e3, -50, 20])
     
     plt.show()
