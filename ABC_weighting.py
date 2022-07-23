@@ -22,7 +22,8 @@ precision (type 1) sound level meter."
 import numpy as np
 from numpy import pi, log10
 from scipy.signal import zpk2tf, zpk2sos, freqs, sosfilt
-from waveform_analysis.weighting_filters._filter_design import _zpkbilinear
+from scipy import signal
+import matplotlib.pyplot as plt
 
 __all__ = ['ABC_weighting', 'A_weighting', 'A_weight']
 
@@ -32,27 +33,6 @@ def ABC_weighting(curve='A'):
     Design of an analog weighting filter with A, B, or C curve.
 
     Returns zeros, poles, gain of the filter.
-
-    Examples
-    --------
-    Plot all 3 curves:
-
-    >>> from scipy import signal
-    >>> import matplotlib.pyplot as plt
-    >>> for curve in ['A', 'B', 'C']:
-    ...     z, p, k = ABC_weighting(curve)
-    ...     w = 2*pi*logspace(log10(10), log10(100000), 1000)
-    ...     w, h = signal.freqs_zpk(z, p, k, w)
-    ...     plt.semilogx(w/(2*pi), 20*np.log10(h), label=curve)
-    >>> plt.title('Frequency response')
-    >>> plt.xlabel('Frequency [Hz]')
-    >>> plt.ylabel('Amplitude [dB]')
-    >>> plt.ylim(-50, 20)
-    >>> plt.grid(True, color='0.7', linestyle='-', which='major', axis='both')
-    >>> plt.grid(True, color='0.9', linestyle='-', which='minor', axis='both')
-    >>> plt.legend()
-    >>> plt.show()
-
     """
     if curve not in 'ABC':
         raise ValueError('Curve type not understood')
@@ -222,5 +202,16 @@ def _derive_coefficients():
 
 
 if __name__ == '__main__':
-    import pytest
-    pytest.main(['../tests/test_ABC_weighting.py', "--capture=sys"])
+    for curve in ['A', 'B', 'C']:
+        z, p, k = ABC_weighting(curve)
+        w = 2*pi*np.logspace(log10(10), log10(100000), 1000)
+        w, h = signal.freqs_zpk(z, p, k, w)
+        plt.semilogx(w/(2*pi), 20*np.log10(h), label=curve)
+    plt.title('Frequency response')
+    plt.xlabel('Frequency [Hz]')
+    plt.ylabel('Amplitude [dB]')
+    plt.ylim(-50, 20)
+    plt.grid(True, color='0.7', linestyle='-', which='major', axis='both')
+    plt.grid(True, color='0.9', linestyle='-', which='minor', axis='both')
+    plt.legend()
+    plt.show()
