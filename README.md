@@ -35,17 +35,18 @@ def get_zpk(curve='A', fs=False)
  - `curve` defines the weighting filter and can be 'A', 'B' or 'C'.
  - `fs` sets the sampling rate of the digitial system. If not set it's analogue.
 
-Returns zeros, poles, gain of the filter.
+and returns zeros, poles, gain of the filter.
 
 
-This returns the filter coefficients, for example:
+For example, this returns the coefficients of an A-weighted filter
+running at 48kHz sampling rate:
 ```
 z,p,k = ABC_weighting.get_zpk(fs = 48000)
 ```
 
 The same applies to the `ITU_R_468_weighting` module, for example:
 ```
-z,p,k = ITU_R_468_weighting.get_zpk(fs=False)
+z,p,k = ITU_R_468_weighting.get_zpk(fs = 48000)
 ```
 
 ## Demo plots
