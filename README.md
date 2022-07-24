@@ -9,10 +9,10 @@ completely wrong (because of the bilinear transform) here I have used
 the matched z-transform which aims to match 1:1 the analogue and
 digital frequency response.
 
-The precision towards the Nyquist frequency can be increased
-by using a higher sampling rate but given that audio
-has such low energy over 10kHz there is probably not much
-point to it.
+The precision towards the Nyquist frequency depends on the sampling rate
+but given that audio has such low energy over 10kHz there is probably not much
+point to it. In addition the analogue frontend will introduce
+additional damping towards Nyquist and the errors might just cancel out.
 
 On the other hand lower sampling rates (fs >= 2kHz) can be used
 if only low frequency noise has been measured.
@@ -64,10 +64,15 @@ Run:
 ```
 python demo_ABC_weighting.py
 ```
+this calculates the frequency responses for both the 
+analogue and digital weighting filters at 48kHz:
 
 ![alt tag](abc_a.png)
 ![alt tag](abc_d.png)
 
+The higher the sampling rate the better the match
+between analogue and digital filter responses towards
+the Nyquist frequency.
 
 ## Unit tests
 
@@ -77,7 +82,8 @@ If the tests are run directly then they also plot the results:
 python3 test_ABC_weighting.py
 python3 test_ITU_R_468_weighting.py
 ```
-
+They run at a sampling rate of fs = 48000 Hz * 6 to nudge
+the digital frequency into the tight tolerances.
 
 # Credits
 

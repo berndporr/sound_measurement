@@ -6,7 +6,7 @@ from numpy import pi
 
 import ABC_weighting
 
-fs = 48000 * 10
+fs = 48000 * 6
 
 # It will plot things for sanity-checking if MPL is installed
 try:
