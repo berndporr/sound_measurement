@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python3
 """
 Generates zero/pole transfer functions for A, B and C weighting.
 The analogue transfer functions have been created with great
