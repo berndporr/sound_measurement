@@ -62,12 +62,21 @@ z,p,k = ITU_R_468_weighting.get_zpk(fs = 48000)
 
 Run:
 ```
-python ABC_weighting.py
+python demo_ABC_weighting.py
 ```
 
 ![alt tag](abc_a.png)
 ![alt tag](abc_d.png)
 
+
+## Unit tests
+
+Both modules run unit tests if run as a main program.
+If the tests are run directly then they also plot the results:
+```
+python3 test_ABC_weighting.py
+python3 test_ITU_R_468_weighting.py
+```
 
 
 # Credits
