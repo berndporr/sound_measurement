@@ -7,7 +7,7 @@ with open('README.rst') as f:
 
 setup(
     name='sound_weighting_filters',
-    version='0.9.0',
+    version='0.9.1',
     description="IIR coefficients for A,B,C and ITU_R_468 weighting filters",
     long_description=long_description,
     author='Bernd Porr',
