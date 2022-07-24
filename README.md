@@ -2,13 +2,12 @@
 
 Two modules which provide the zpk coefficients for the
 A,B,C and ITU_R_468 weighting filters. These can then
-be used by signal.lfilter to filter the audio signals.
+be used by `signal.lfilter` to filter audio signals.
 
-In contrast to other implementations which get the high frequency
-end completely wrong (because of the bilinear transform) here
-I have used the matched z-transform which aims to match 1:1
-the analogue and digital frequency response. This is getting
-more imprecise towards the Nyquist frequency but not completely off.
+In contrast to other implementations which get the high frequency end
+completely wrong (because of the bilinear transform) here I have used
+the matched z-transform which aims to match 1:1 the analogue and
+digital frequency response.
 
 The precision towards the Nyquist frequency can be increased
 by using a higher sampling rate but given that audio
