@@ -19,7 +19,15 @@ example 8kHz if only low frequency noise has been measured.
 
 ## Installation
 
-python setup install
+It's on pypi. Just run:
+```
+pip install sound_weighting_filters
+```
+
+or if you prefer to install from this git repo:
+```
+python setup install [ --user ]
+```
 
 ## Usage
 
