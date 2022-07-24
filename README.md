@@ -82,8 +82,8 @@ If the tests are run directly then they also plot the results:
 python3 test_ABC_weighting.py
 python3 test_ITU_R_468_weighting.py
 ```
-They run at a sampling rate of fs = 48000 Hz * 6 to nudge
-the digital frequency into the tight tolerances.
+They run at a sampling rate of fs = 48000 Hz * 6 to force
+the digital filter responses within the tight tolerances.
 
 # Credits
 
