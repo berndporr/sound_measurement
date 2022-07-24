@@ -31,7 +31,6 @@ Copyright (c) 2022 mail@berndporr.me.uk
 """
 
 import numpy as np
-from numpy import pi, log10
 from scipy.signal import zpk2tf, zpk2sos, freqs, sosfilt
 from scipy import signal
 import matplotlib.pyplot as plt
@@ -50,13 +49,13 @@ def normalise_a2d(z,p,k,fs):
         # Normalize to 0 dB at 1 kHz for all curves
         b, a = zpk2tf(z, p, 1)
         k = 1
-        w = 2*pi * 1000 / fs
+        w = 2*np.pi * 1000 / fs
         [w], [h] = signal.freqz(b, a, [1000], fs=fs)
         k = k / np.abs(h)
     else:
         # Normalise the analogue one to 0dB at 1kHz
         b, a = zpk2tf(z, p, k)
-        k /= abs(freqs(b, a, [2*pi*1000])[1][0])
+        k /= abs(freqs(b, a, [2*np.pi*1000])[1][0])
     return z,p,k
 
 
@@ -81,10 +80,10 @@ def get_zpk(curve='A', fs=False):
     # derivation.  See _derive_coefficients()
 
     z = [0, 0]
-    p = [-2*pi*20.598997057568145,
-         -2*pi*20.598997057568145,
-         -2*pi*12194.21714799801,
-         -2*pi*12194.21714799801]
+    p = [-2*np.pi*20.598997057568145,
+         -2*np.pi*20.598997057568145,
+         -2*np.pi*12194.21714799801,
+         -2*np.pi*12194.21714799801]
     k = 1
 
     if curve == 'A':
@@ -95,8 +94,8 @@ def get_zpk(curve='A', fs=False):
         # IEC 61672 specifies cutoff of "10^2.45 Hz" and formulas for
         # derivation.  See _derive_coefficients()
 
-        p.append(-2*pi*107.65264864304628)
-        p.append(-2*pi*737.8622307362899)
+        p.append(-2*np.pi*107.65264864304628)
+        p.append(-2*np.pi*737.8622307362899)
         z.append(0)
         z.append(0)
 
@@ -105,7 +104,7 @@ def get_zpk(curve='A', fs=False):
         #    Same as C weighting +
         #    1 pole on real axis at "10^2.2 (or 158.5) Hz"
 
-        p.append(-2*pi*10**2.2)  # exact
+        p.append(-2*np.pi*10**2.2)  # exact
         z.append(0)
 
     p = np.array(p)
@@ -168,35 +167,37 @@ def _derive_coefficients():
 
 
 if __name__ == '__main__':
+    fs = 48000
+    
     for curve in ['A', 'B', 'C']:
         z, p, k = get_zpk(curve)
-        w = 2*pi*np.logspace(log10(10), log10(20000), 1000)
+        w = 2*np.pi*np.logspace(np.log10(10), np.log10(fs/2), 1000)
         w, h = signal.freqs_zpk(z, p, k, w)
-        plt.semilogx(w/(2*pi), 20*np.log10(np.abs(h)), label=curve)
+        plt.semilogx(w/(2*np.pi), 20*np.log10(np.abs(h)), label=curve)
     plt.title('Frequency response (analogue filter)')
     plt.xlabel('Frequency [Hz]')
     plt.ylabel('Amplitude [dB]')
     plt.grid(True, color='0.7', linestyle='-', which='major', axis='both')
     plt.grid(True, color='0.9', linestyle='-', which='minor', axis='both')
-    plt.axis([10, 30e3, -50, 20])
+    plt.axis([10, fs/2, -50, 20])
     plt.legend()
 
 
     plt.figure()
 
-    fs = 48000
     for curve in ['A', 'B', 'C']:
         z, p, k = get_zpk(curve,fs)
         b, a = zpk2tf(z, p, k)
         f = np.logspace(np.log10(10), np.log10(fs/2), 1000)
-        w = 2*pi * f / fs
+        w = 2*np.pi * f / fs
         w, h = signal.freqz(b, a, w)
-        plt.semilogx(w*fs/(2*pi), 20*np.log10(abs(h)))
+        plt.semilogx(w*fs/(2*np.pi), 20*np.log10(abs(h)), label=curve)
     plt.title('Frequency response (digital filter)')
     plt.xlabel('Frequency [Hz]')
     plt.ylabel('Amplitude [dB]')
-    plt.grid(True, color='0.7', linestyle='-', which='both', axis='both')
-    plt.axis([10, 30e3, -50, 20])
+    plt.grid(True, color='0.7', linestyle='-', which='major', axis='both')
+    plt.grid(True, color='0.9', linestyle='-', which='minor', axis='both')
+    plt.axis([10, fs/2, -50, 20])
     plt.legend()
 
     plt.show()
