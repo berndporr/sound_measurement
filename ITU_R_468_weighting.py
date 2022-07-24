@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python3
 """
 Created on Sun Mar 20 2016
 
@@ -45,8 +45,10 @@ def normalise_a2d(z,p,fs):
 
 def get_zpk(fs = False):
     """
+
     Return ITU-R 468 analog (fs=False) or digital (fs=sampling rate) 
     weighting filter zeros, poles, and gain.
+
     """
 
     z = np.array([0])
@@ -66,7 +68,7 @@ if __name__ == '__main__':
     z, p, k = get_zpk()
     w = 2*np.pi*np.logspace(np.log10(10), np.log10(20000), 1000)
     w, h = signal.freqs_zpk(z, p, k, w)
-    plt.semilogx(w/(2*np.pi), 20*np.log10(h))
+    plt.semilogx(w/(2*np.pi), 20*np.log10(np.abs(h)))
     plt.title('Frequency response (analogue filter)')
     plt.xlabel('Frequency [Hz]')
     plt.ylabel('Amplitude [dB]')

@@ -172,13 +172,13 @@ if __name__ == '__main__':
         z, p, k = get_zpk(curve)
         w = 2*pi*np.logspace(log10(10), log10(20000), 1000)
         w, h = signal.freqs_zpk(z, p, k, w)
-        plt.semilogx(w/(2*pi), 20*np.log10(h), label=curve)
+        plt.semilogx(w/(2*pi), 20*np.log10(np.abs(h)), label=curve)
     plt.title('Frequency response (analogue filter)')
     plt.xlabel('Frequency [Hz]')
     plt.ylabel('Amplitude [dB]')
-    plt.ylim(-50, 20)
     plt.grid(True, color='0.7', linestyle='-', which='major', axis='both')
     plt.grid(True, color='0.9', linestyle='-', which='minor', axis='both')
+    plt.axis([10, 30e3, -50, 20])
     plt.legend()
 
 
@@ -197,5 +197,6 @@ if __name__ == '__main__':
     plt.ylabel('Amplitude [dB]')
     plt.grid(True, color='0.7', linestyle='-', which='both', axis='both')
     plt.axis([10, 30e3, -50, 20])
-    
+    plt.legend()
+
     plt.show()
