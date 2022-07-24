@@ -28,7 +28,11 @@ import matplotlib.pyplot as plt
 __all__ = ['ABC_weighting', 'A_weighting', 'A_weight']
 
 
-def ABC_weighting(curve='A'):
+def matched_z(z,p,fs):
+    return np.exp(z/fs),np.exp(p/fs)
+
+
+def ABC_weighting(curve='A', fs=False):
     """
     Design of an analog weighting filter with A, B, or C curve.
 
@@ -74,15 +78,23 @@ def ABC_weighting(curve='A'):
         p.append(-2*pi*10**2.2)  # exact
         z.append(0)
 
-    # Normalize to 0 dB at 1 kHz for all curves
-    b, a = zpk2tf(z, p, k)
-    k /= abs(freqs(b, a, [2*pi*1000])[1][0])
+    p = np.array(p)
+    z = np.array(z)
 
-    return np.array(z), np.array(p), k
+    # Use the matched z transformation to get the digital filter.
+    if fs:
+        z, p = matched_z(z,p,fs)
+        # Normalize to 0 dB at 1 kHz for all curves
+        b, a = zpk2tf(z, p, 1)
+        k = 1
+        w = 2*pi * 1000 / fs
+        [w], [h] = signal.freqz(b, a, [1000], fs=fs)
+        k = k / np.abs(h)
+    else:
+        b, a = zpk2tf(z, p, k)
+        k /= abs(freqs(b, a, [2*pi*1000])[1][0])
 
-def matched_z(z,p,fs):
-    return np.exp(z/fs),np.exp(p/fs)
-
+    return z, p, k
 
 def A_weighting(fs, output='ba'):
     """
@@ -116,26 +128,14 @@ def A_weighting(fs, output='ba'):
     >>> plt.grid(True, color='0.7', linestyle='-', which='both', axis='both')
     >>> plt.axis([10, 100e3, -50, 20])
     """
-    z, p, k = ABC_weighting('A')
-
-    # Use the matched z transformation to get the digital filter.
-    print(z,p,k)
-    z_d, p_d = matched_z(z,p,fs) #signal.bilinear_zpk(z, p, k, fs)
-    # Normalize to 0 dB at 1 kHz for all curves
-    b, a = zpk2tf(z_d, p_d, 1)
-    k_d = 1
-    w = 2*pi * 1000 / fs
-    [w], [h] = signal.freqz(b, a, [1000], fs=fs)
-    print("wmh=",w,np.abs(h))
-    k_d = k_d / np.abs(h)
-    print(z_d,p_d,k_d)
+    z, p, k = ABC_weighting('A',fs)
 
     if output == 'zpk':
-        return z_d, p_d, k_d
+        return z, p, k
     elif output in {'ba', 'tf'}:
-        return zpk2tf(z_d, p_d, k_d)
+        return zpk2tf(z, p, k)
     elif output == 'sos':
-        return zpk2sos(z_d, p_d, k_d)
+        return zpk2sos(z, p, k)
     else:
         raise ValueError("'%s' is not a valid output form." % output)
 
