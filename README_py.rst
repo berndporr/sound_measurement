@@ -12,7 +12,7 @@ digital frequency response.
 
 The precision towards the Nyquist frequency can be increased
 by using a higher sampling rate but given that audio
-has such low energies over 10kHz there is probably not much
+has such low energy over 10kHz there is probably not much
 point to it.
 
 On the other hand lower sampling rates are possible for
