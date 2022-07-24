@@ -35,7 +35,8 @@ Usage
 Import the module::
 
     import ABC_weighting
-    
+    import ITU_R_468_weighting
+
 
 This has a single function::
 
@@ -43,9 +44,9 @@ This has a single function::
 
     
 - `curve` defines the weighting filter and can be 'A', 'B' or 'C'.
-- `fs` sets the sampling rate of the digital system.
+- `fs` sets the sampling rate of the digital system. Or `False` for an analogue filter.
  
-Returns zeros, poles, gain of the filter.
+and returns zeros, poles, gain of the filter.
 
 
 For example::
@@ -66,7 +67,7 @@ Demo plots
 Run::
 
     python ABC_weighting.py
-
+    python ITU_R_468_weighting.py
 
 
 Credits

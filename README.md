@@ -25,6 +25,7 @@ python setup install
 
 ```
 import ABC_weighting
+import ITU_R_468_weighting
 ```
 
 This has a single function:
