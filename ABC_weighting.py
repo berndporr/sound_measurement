@@ -7,6 +7,11 @@ transform for 1:1 mapping to the frequency domain. Because
 the matched z-transform virtually any sampling rate can be
 used without any error.
 
+Use get_zpk(curve='A', fs=False) to get the IIR coefficients.
+If no sampling rate fs is given the function returns the analogue zpk
+coefficients and with fs the digital ones. The paramater curve can be
+'A', 'B' or 'C'.
+
 Definitions from
  - ANSI S1.4-1983 Specification for Sound Level Meters, Section
    5.2 Weighting Networks, pg 5.
@@ -115,13 +120,11 @@ def get_zpk(curve='A', fs=False):
     return z, p, k
 
 
+# Calculate A- and C-weighting coefficients with equations from IEC 61672-1
+#
+# This is for reference only. The coefficients were generated with this and
+# then placed in ABC_weighting().
 def _derive_coefficients():
-    """
-    Calculate A- and C-weighting coefficients with equations from IEC 61672-1
-
-    This is for reference only. The coefficients were generated with this and
-    then placed in ABC_weighting().
-    """
     import sympy as sp
 
     # Section 5.4.6
