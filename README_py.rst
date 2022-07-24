@@ -42,8 +42,8 @@ This has a single function::
     get_zpk(curve='A', fs=False)
 
     
- - `curve` defines the weighting filter and can be 'A', 'B' or 'C'.
- - `fs` sets the sampling rate of the digital system.
+- `curve` defines the weighting filter and can be 'A', 'B' or 'C'.
+- `fs` sets the sampling rate of the digital system.
  
 Returns zeros, poles, gain of the filter.
 
