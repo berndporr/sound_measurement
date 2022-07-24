@@ -7,7 +7,16 @@ be used by signal.lfilter to filter the audio signals.
 In contrast to other implementations which get the high frequency
 end completely wrong (because of the bilinear transform) here
 I have used the matched z-transform which aims to match 1:1
-the analogue and digital frequency response.
+the analogue and digital frequency response. This is getting
+more imprecise towards the Nyquist frequency but not completely off.
+
+The precision towards the Nyquist frequency can be increased
+by using a higher sampling rate but given that audio
+has such low energies over 10kHz there is probably not much
+point to it.
+
+On the other hand lower sampling rates are possible for
+example 8kHz if only low frequency noise has been measured.
 
 ## Installation
 
