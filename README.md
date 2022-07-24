@@ -14,8 +14,8 @@ by using a higher sampling rate but given that audio
 has such low energy over 10kHz there is probably not much
 point to it.
 
-On the other hand lower sampling rates are possible for
-example 8kHz if only low frequency noise has been measured.
+On the other hand lower sampling rates (fs >= 2kHz) can be used
+if only low frequency noise has been measured.
 
 ## Installation
 
