@@ -56,7 +56,7 @@ python ABC_weighting.py
 ![alt tag](abc_d.png)
 
 
-The same applies to the `ITU_R_468` module.
+The same applies to the `ITU_R_468` module using `get_zpk(fs=False)`.
 
 
 # Credits
