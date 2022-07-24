@@ -63,7 +63,7 @@ def get_zpk(curve='A', fs=False):
     """ Design of an analog or digital weighting filter with A, B, or C curve.
     Arguments:
         curve: defines the weighting filter and can be 'A', 'B' or 'C'.
-        fs: sets the sampling rate of the digitial system.
+        fs: sets the sampling rate of the digital system.
     Returns:
         zeros, poles, gain of the filter.
     """

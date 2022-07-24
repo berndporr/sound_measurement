@@ -44,6 +44,13 @@ def normalise_a2d(z,p,fs):
 
 
 def get_zpk(fs = False):
+    """ Design of an analog or digital weighting filter with ITU-R 468 curve.
+    Argument:
+        fs: sets the sampling rate of the digital system.
+    Returns:
+        zeros, poles, gain of the filter.
+    """
+
     """
 
     Return ITU-R 468 analog (fs=False) or digital (fs=sampling rate) 
