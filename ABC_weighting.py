@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri May 23 2014
+Generates zero/pole transfer functions for A, B and C weighting.
+The analogue transfer functions have been created with great
+care by endolith@gmail.com and I have then added the matched-z
+transform for 1:1 mapping to the frequency domain. Because
+the matched z-transform virtually any sampling rate can be
+used without any error.
 
 Definitions from
  - ANSI S1.4-1983 Specification for Sound Level Meters, Section
@@ -17,6 +22,12 @@ Appendix C:
 response in the region above 16 kHz leads to an error which may exceed the
 intended tolerances for the measurement of A-weighted sound level by a
 precision (type 1) sound level meter."
+
+The MIT License (MIT)
+
+Copyright (c) 2016 endolith@gmail.com
+Copyright (c) 2022 mail@berndporr.me.uk
+
 """
 
 import numpy as np
@@ -32,9 +43,28 @@ def matched_z(z,p,fs):
     return np.exp(z/fs),np.exp(p/fs)
 
 
-def ABC_weighting(curve='A', fs=False):
+def normalise_a2d(z,p,k,fs):
+    if fs:
+        # Use the matched z transformation to get the digital filter.
+        z, p = matched_z(z,p,fs)
+        # Normalize to 0 dB at 1 kHz for all curves
+        b, a = zpk2tf(z, p, 1)
+        k = 1
+        w = 2*pi * 1000 / fs
+        [w], [h] = signal.freqz(b, a, [1000], fs=fs)
+        k = k / np.abs(h)
+    else:
+        # Normalise the analogue one to 0dB at 1kHz
+        b, a = zpk2tf(z, p, k)
+        k /= abs(freqs(b, a, [2*pi*1000])[1][0])
+    return z,p,k
+
+
+def get_zpk(curve='A', fs=False):
     """
-    Design of an analog weighting filter with A, B, or C curve.
+    Design of an analog or digital weighting filter with A, B, or C curve.
+    @param curve defines the weighting filter and can be 'A', 'B' or 'C'.
+    @param fs sets the sampling rate of the digitial system. If not set it's analogue.
 
     Returns zeros, poles, gain of the filter.
     """
@@ -81,81 +111,9 @@ def ABC_weighting(curve='A', fs=False):
     p = np.array(p)
     z = np.array(z)
 
-    # Use the matched z transformation to get the digital filter.
-    if fs:
-        z, p = matched_z(z,p,fs)
-        # Normalize to 0 dB at 1 kHz for all curves
-        b, a = zpk2tf(z, p, 1)
-        k = 1
-        w = 2*pi * 1000 / fs
-        [w], [h] = signal.freqz(b, a, [1000], fs=fs)
-        k = k / np.abs(h)
-    else:
-        b, a = zpk2tf(z, p, k)
-        k /= abs(freqs(b, a, [2*pi*1000])[1][0])
+    z,p,k = normalise_a2d(z,p,k,fs)
 
     return z, p, k
-
-def A_weighting(fs, output='ba'):
-    """
-    Design of a digital A-weighting filter.
-
-    Designs a digital A-weighting filter for
-    sampling frequency `fs`.
-    Warning: fs should normally be higher than 20 kHz. For example,
-    fs = 48000 yields a class 1-compliant filter.
-
-    Parameters
-    ----------
-    fs : float
-        Sampling frequency
-    output : {'ba', 'zpk', 'sos'}, optional
-        Type of output:  numerator/denominator ('ba'), pole-zero ('zpk'), or
-        second-order sections ('sos'). Default is 'ba'.
-
-    Examples
-    --------
-    Plot frequency response
-
-    >>> from scipy.signal import freqz
-    >>> import matplotlib.pyplot as plt
-    >>> fs = 200000
-    >>> b, a = A_weighting(fs)
-    >>> f = np.logspace(np.log10(10), np.log10(fs/2), 1000)
-    >>> w = 2*pi * f / fs
-    >>> w, h = freqz(b, a, w)
-    >>> plt.semilogx(w*fs/(2*pi), 20*np.log10(abs(h)))
-    >>> plt.grid(True, color='0.7', linestyle='-', which='both', axis='both')
-    >>> plt.axis([10, 100e3, -50, 20])
-    """
-    z, p, k = ABC_weighting('A',fs)
-
-    if output == 'zpk':
-        return z, p, k
-    elif output in {'ba', 'tf'}:
-        return zpk2tf(z, p, k)
-    elif output == 'sos':
-        return zpk2sos(z, p, k)
-    else:
-        raise ValueError("'%s' is not a valid output form." % output)
-
-
-def A_weight(signal, fs):
-    """
-    Return the given signal after passing through a digital A-weighting filter
-
-    signal : array_like
-        Input signal, with time as dimension
-    fs : float
-        Sampling frequency
-    """
-    # TODO: Upsample signal high enough that filter response meets Type 0
-    # limits.  A passes if fs >= 260 kHz, but not at typical audio sample
-    # rates. So upsample 48 kHz by 6 times to get an accurate measurement?
-    # TODO: Also this could just be a measurement function that doesn't
-    # save the whole filtered waveform.
-    sos = A_weighting(fs, output='sos')
-    return sosfilt(sos, signal)
 
 
 def _derive_coefficients():
@@ -211,11 +169,11 @@ def _derive_coefficients():
 
 if __name__ == '__main__':
     for curve in ['A', 'B', 'C']:
-        z, p, k = ABC_weighting(curve)
+        z, p, k = get_zpk(curve)
         w = 2*pi*np.logspace(log10(10), log10(20000), 1000)
         w, h = signal.freqs_zpk(z, p, k, w)
         plt.semilogx(w/(2*pi), 20*np.log10(h), label=curve)
-    plt.title('Frequency response')
+    plt.title('Frequency response (analogue filter)')
     plt.xlabel('Frequency [Hz]')
     plt.ylabel('Amplitude [dB]')
     plt.ylim(-50, 20)
@@ -227,11 +185,16 @@ if __name__ == '__main__':
     plt.figure()
 
     fs = 48000
-    b, a = A_weighting(fs)
-    f = np.logspace(np.log10(10), np.log10(fs/2), 1000)
-    w = 2*pi * f / fs
-    w, h = signal.freqz(b, a, w)
-    plt.semilogx(w*fs/(2*pi), 20*np.log10(abs(h)))
+    for curve in ['A', 'B', 'C']:
+        z, p, k = get_zpk(curve,fs)
+        b, a = zpk2tf(z, p, k)
+        f = np.logspace(np.log10(10), np.log10(fs/2), 1000)
+        w = 2*pi * f / fs
+        w, h = signal.freqz(b, a, w)
+        plt.semilogx(w*fs/(2*pi), 20*np.log10(abs(h)))
+    plt.title('Frequency response (digital filter)')
+    plt.xlabel('Frequency [Hz]')
+    plt.ylabel('Amplitude [dB]')
     plt.grid(True, color='0.7', linestyle='-', which='both', axis='both')
     plt.axis([10, 30e3, -50, 20])
     
