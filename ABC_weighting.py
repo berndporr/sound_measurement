@@ -60,12 +60,12 @@ def normalise_a2d(z,p,k,fs):
 
 
 def get_zpk(curve='A', fs=False):
-    """
-    Design of an analog or digital weighting filter with A, B, or C curve.
-    @param curve defines the weighting filter and can be 'A', 'B' or 'C'.
-    @param fs sets the sampling rate of the digitial system. If not set it's analogue.
-
-    Returns zeros, poles, gain of the filter.
+    """ Design of an analog or digital weighting filter with A, B, or C curve.
+    Arguments:
+        curve: defines the weighting filter and can be 'A', 'B' or 'C'.
+        fs: sets the sampling rate of the digitial system.
+    Returns:
+        zeros, poles, gain of the filter.
     """
     if curve not in 'ABC':
         raise ValueError('Curve type not understood')
