@@ -4,6 +4,11 @@ Two modules which provide the zpk coefficients for the
 A,B,C and ITU_R_468 weighting filters. These can then
 be used by signal.lfilter to filter the audio signals.
 
+In contrast to other implementations which get the high frequency
+end completely wrong (because of the bilinear transform) here
+I have used the matched z-transform which aims to match 1:1
+the analogue and digital frequency response.
+
 ## Installation
 
 python setup install
@@ -27,20 +32,24 @@ def get_zpk(curve='A', fs=False):
     """
 ```
 
-This returns the filter coefficients.
+This returns the filter coefficients, for example:
+```
+z,p,k = ABC_weighting.get_zpk(fs = 48000)
+```
 
 ## Demo plots
 
 Run:
 ```
-ABC_weighting.py
+python ABC_weighting.py
 ```
 
 ![alt tag](abc_a.png)
 ![alt tag](abc_d.png)
 
 
-The same applies to ITU_R_468.
+The same applies to the `ITU_R_468` module.
+
 
 # Credits
 
