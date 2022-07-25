@@ -24,7 +24,7 @@ It's on pypi. Just run:
 pip install sound_weighting_filters
 ```
 
-or if you prefer to install from this git repo:
+or if you prefer to install from this git Rep:
 ```
 python setup install [ --user ]
 ```
@@ -36,10 +36,11 @@ import ABC_weighting
 import ITU_R_468_weighting
 ```
 
-This has a single function:
+Both modules have a single function to get the zpk coefficients.
+The module `ABC_weighting` has the function:
 
 ```
-def get_zpk(curve='A', fs=False)
+z,p,k = ABC_weighting.get_zpk(curve='A', fs=False)
 ```
  - `curve` defines the weighting filter and can be 'A', 'B' or 'C'.
  - `fs` sets the sampling rate of the digitial system. If not set it's analogue.
@@ -53,7 +54,8 @@ running at 48kHz sampling rate:
 z,p,k = ABC_weighting.get_zpk(fs = 48000)
 ```
 
-The same applies to the `ITU_R_468_weighting` module, for example:
+The same applies to the `ITU_R_468_weighting` module but only take the
+sampling rate as an argument, for example:
 ```
 z,p,k = ITU_R_468_weighting.get_zpk(fs = 48000)
 ```
