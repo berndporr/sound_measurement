@@ -48,11 +48,18 @@ z,p,k = ABC_weighting.get_zpk(curve='A', fs=False)
 and returns zeros, poles, gain of the filter.
 
 
-For example, this returns the coefficients of an A-weighted filter
+For example, this code returns the coefficients of an A-weighted filter
 running at 48kHz sampling rate:
 ```
 z,p,k = ABC_weighting.get_zpk(fs = 48000)
 ```
+which can then be used to filter a signal:
+```
+sos = signal.zpk2sos(z, p, k)
+y_weighted = signal.sosfilt(sos,y_unweighted)
+```
+where `y_unweighted` is the unweighted input signal and `y_weighted`
+the weighted output signal.
 
 The same applies to the `ITU_R_468_weighting` module but only take the
 sampling rate as an argument, for example:
