@@ -61,8 +61,8 @@ y_weighted = signal.sosfilt(sos,y_unweighted)
 where `y_unweighted` is the unweighted input signal and `y_weighted`
 the weighted output signal.
 
-The same applies to the `ITU_R_468_weighting` module but only take the
-sampling rate as an argument, for example:
+The same applies to the `ITU_R_468_weighting` module but its `get_zpk`
+only takes the sampling rate as an argument, for example:
 ```
 z,p,k = ITU_R_468_weighting.get_zpk(fs = 48000)
 ```
